@@ -74,6 +74,9 @@ pub struct ErgazomenosWTOAnalytics{
     pub f_to: String, 
 }
 
+
+//Unit test 
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -18,13 +18,13 @@ pub struct WorkingStatusChange{
     pub f_rel_protocol: String,
     pub f_rel_date: String,
     pub f_comments: String,
-    #[serde(rename = "Egrazomenoi")]
+    #[serde(rename = "Ergazomenoi")]
     pub ergazomenoi: Ergazomenoi,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Ergazomenoi{
-    #[serde(rename = "Egrazomenos")]
+    #[serde(rename = "Ergazomenos")]
     pub egrazomenos: Vec<Ergazomenos>
 }
 

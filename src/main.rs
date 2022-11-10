@@ -4,11 +4,16 @@ use std::io::BufWriter;
 use std::env;
 use std::process;
 use std::path::Path;
-use http::{Request, Response};
 mod working_status;
+use working_status::*;
 mod wto;
-mod E3;
+mod anaggelia;
 mod overtimes;
+mod card;
+mod http_client;
+mod credentials;
+mod auth_response;
+use auth_response::*;
 
 
 fn main() {
@@ -24,7 +29,16 @@ fn main() {
         
         //if file doesn't exist reply error to legacy app and exit
         reply(file_path, Err(String::from("Το συννημένο αρχείο δεν υπάρχει")));
-        process::exit(1)}
+        process::exit(1)
+    }
+
+    let config_path = &args[3];
+    if !Path::new(config_path).exists() {
+        
+        //if file doesn't exist reply error to legacy app and exit
+        reply(config_path, Err(String::from("Το config αρχείο δεν υπάρχει")));
+        process::exit(1)
+    }
 
 
 
