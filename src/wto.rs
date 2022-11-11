@@ -3,13 +3,13 @@ use serde::{Serialize, Deserialize};
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct WtosWrapper{
     #[serde(rename = "WTOS")]
-    wtos: Wtos, 
+    pub wtos: Wtos, 
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Wtos{
     #[serde(rename = "WTO")]
-    wto: Vec<Wto>,
+    pub wto: Vec<Wto>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -29,26 +29,11 @@ pub struct Wto{
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Ergazomenoi{
     #[serde(rename = "ErgazomenoiWTO")]
-    ergazomenoi_wto: Vec<ErgazomenoiWTO>,
+    pub ergazomenoi_wto: Vec<ErgazomenoiWTO>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct ErgazomenoiWTO{
-    pub f_afm: String,
-    pub f_eponymo: String,
-    pub f_onoma: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub f_day: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub f_date: Option<String>,
-    #[serde(rename = "ErgazomenosAnalytics")]
-    pub egrazomenos_analytics: ErgazomenosAnalytics,
-
-
-}
-
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct ErgazomenoiWTOType{
     pub f_afm: String,
     pub f_eponymo: String,
     pub f_onoma: String,
@@ -64,7 +49,6 @@ pub struct ErgazomenoiWTOType{
 pub struct ErgazomenosAnalytics{
     #[serde(rename = "ErgazomenosWTOAnalytics")]
     pub egrazomenos_wto_analytics: Vec<ErgazomenosWTOAnalytics>,
-
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

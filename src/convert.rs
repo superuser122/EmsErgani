@@ -1,4 +1,4 @@
-use crate::{anaggelia::*, working_status::*, overtimes::Egrazomenos,};
+use crate::{anaggelia::*, working_status::*, wto::*};
 
 
 pub fn get_anaggelia(lines: Vec<&str>) -> Result<AnaggeliesE3Wrapper, String> {
@@ -6,8 +6,8 @@ pub fn get_anaggelia(lines: Vec<&str>) -> Result<AnaggeliesE3Wrapper, String> {
     for line in lines{
         let row = line.clone().to_string();
         if row.starts_with("1") {
-            if row.len() != 119 { return Err("Κάποια γραμμή αναγγελίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
             let cells: Vec<&str> = row.split(";").collect();
+            if cells.len() < 119 { return Err("Κάποια γραμμή αναγγελίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
             let anaggelia = AnaggeliaE3 {
                 f_aa_pararthmatos: cells[1].clone().to_string(),
                 f_rel_protocol: cells[2].clone().to_string(),
@@ -151,6 +151,7 @@ pub fn get_working_status(lines: Vec<&str>) -> Result<WorkingStatusChangesWrappe
         let row = line.clone().to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
+            if cells.len() < 5 { return Err("Κάποια γραμμή αλλαγής εργασιακής σχέσης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
             wsc.f_aa_pararthmatos = cells[1].clone().to_string();
             wsc.f_rel_protocol = cells[2].clone().to_string();
             wsc.f_rel_date = cells[3].clone().to_string();
@@ -158,7 +159,8 @@ pub fn get_working_status(lines: Vec<&str>) -> Result<WorkingStatusChangesWrappe
         }
         else if row.starts_with("2") {
             let cells: Vec<&str> = row.split(";").collect();
-            let ergazomenos = Ergazomenos {
+            if cells.len() < 12 { return Err("Κάποια γραμμή αλλαγής εργασιακής σχέσης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            let ergazomenos = crate::working_status::Ergazomenos {
                 f_afm: cells[1].clone().to_string(),
                 f_eponymo: cells[2].clone().to_string(),
                 f_onoma: cells[3].clone().to_string(),
@@ -183,3 +185,68 @@ pub fn get_working_status(lines: Vec<&str>) -> Result<WorkingStatusChangesWrappe
 
     Ok(wscsw)
 } 
+
+pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
+    
+    let mut wtosw = WtosWrapper{
+        wtos: Wtos {
+             wto: Vec::new() 
+        }
+    };
+    
+    for line in lines{
+        let row = line.clone().to_string();
+        if row.starts_with("1") {
+            let cells: Vec<&str> = row.split(";").collect();
+            //TODO: cells size check
+            let wto = Wto {
+                f_aa_pararthmatos: cells[1].clone().to_string(),
+                f_rel_protocol: cells[2].clone().to_string(),
+                f_rel_date: cells[3].clone().to_string(),
+                f_comments: cells[4].clone().to_string(),
+                f_from_date: cells[5].clone().to_string(),
+                f_to_date: cells[6].clone().to_string(),
+                ergazomenoi: crate::wto::Ergazomenoi {
+                    ergazomenoi_wto: Vec::new()
+                }
+            };
+            wtosw.wtos.wto.push(wto);
+        }
+        else if row.starts_with("2") {
+            let cells: Vec<&str> = row.split(";").collect();
+            //TODO: cells size check
+            let ergazomenos = ErgazomenoiWTO {
+                f_afm: cells[1].clone().to_string(),
+                f_eponymo: cells[2].clone().to_string(),
+                f_onoma: cells[3].clone().to_string(),
+                f_day: if cells[4].is_empty() { None} else { Some(cells[4].clone().to_string())},
+                f_date: if cells[5].is_empty() { None} else { Some(cells[5].clone().to_string())},
+                egrazomenos_analytics: ErgazomenosAnalytics{
+                    egrazomenos_wto_analytics: Vec::new()
+                }
+            };
+            //Strong rule wto has ONE and only element 
+            if wtosw.wtos.wto.len() == 0 { return Err("Προσπάθεια εισαγωγής γραμμής εργαζομένου σε άδειο παράρτημα".to_string());}
+            wtosw.wtos.wto[0].ergazomenoi.ergazomenoi_wto.push(ergazomenos);
+        }
+        else if row.starts_with("3") {
+            let cells: Vec<&str> = row.split(";").collect();
+            if cells.len() < 4 { return Err("Κάποια γραμμή αναλυτικών εργαζομένου έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            let erg_analytic = ErgazomenosWTOAnalytics {
+                f_type: cells[1].clone().to_string(),
+                f_from: cells[2].clone().to_string(),
+                f_to: cells[3].clone().to_string(), 
+            };
+            match wtosw.wtos.wto[0].ergazomenoi.ergazomenoi_wto.last_mut() {
+                Some(last_erg) => {
+                    last_erg.egrazomenos_analytics.egrazomenos_wto_analytics.push(erg_analytic);
+                },
+                None => {
+                     return Err("Προσπάθεια εισαγωγής αναλυτικών εργαζομένου σε άδεια λίστα εργαζομένων".to_string());
+                }
+            } 
+        }
+    }
+
+    Ok(wtosw)
+}
