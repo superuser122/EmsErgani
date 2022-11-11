@@ -14,6 +14,7 @@ mod http_client;
 mod credentials;
 mod auth_response;
 use auth_response::*;
+mod convert;
 
 
 fn main() {

@@ -2,14 +2,14 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AnaggeliesE3Wrapper{
-    anaggelies: AnaggeliesE3
+    pub anaggelies: AnaggeliesE3
 
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AnaggeliesE3{
     #[serde(rename = "AnaggeliaE3")]
-    anaggelia: Vec<AnaggeliaE3>,
+    pub anaggelia: Vec<AnaggeliaE3>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
