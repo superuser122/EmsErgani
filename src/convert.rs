@@ -1,4 +1,4 @@
-use crate::{anaggelia::*, working_status::*, wto::*};
+use crate::{anaggelia::*, working_status::*, wto::*, overtimes::*, card::*};
 
 
 pub fn get_anaggelia(lines: Vec<&str>) -> Result<AnaggeliesE3Wrapper, String> {
@@ -249,4 +249,113 @@ pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
     }
 
     Ok(wtosw)
+}
+
+pub fn get_overtimes(lines: Vec<&str>) -> Result<OvertimesWrapper, String> {
+    
+    let mut overtimes = OvertimesWrapper{
+        ..Default::default()
+    };
+
+    for line in lines{
+        let row = line.to_string();
+        if row.starts_with("1") {
+            let cells: Vec<&str> = row.split(";").collect();
+            if cells.len() < 15 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+
+            let overtime = Overtime{
+                f_aa_pararthmatos: cells[1].to_string(),
+                f_rel_protocol: cells[2].to_string(),
+                f_rel_date: cells[3].to_string(),
+                f_ypiresia_sepe: cells[4].to_string(),
+                f_ergodotikh_organwsh: cells[5].to_string(),
+                f_kad_kyria: cells[6].to_string(),
+                f_kad_deyt_1: cells[7].to_string(),
+                f_kad_deyt_2: cells[8].to_string(),
+                f_kad_deyt_3: cells[9].to_string(),
+                f_kad_deyt_4: cells[10].to_string(),
+                f_kad_pararthmatos: cells[11].to_string(),
+                f_kallikratis_pararthmatos: cells[12].to_string(),
+                f_comments: cells[13].to_string(),
+                f_afm_proswpoy: cells[14].to_string(),
+                ergazomenoi: crate::overtimes::Ergazomenoi {
+                    ergazomenoi: Vec::new()
+                }
+            };
+
+            overtimes.overtimes.overtime.push(overtime);
+        }
+        else if row.starts_with("2") {
+            let cells: Vec<&str> = row.split(";").collect();
+            if cells.len() < 13 { return Err("Η γραμμή εργαζομένου υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+
+            let ergazomenos = crate::overtimes::Egrazomenos{
+                f_afm: cells[1].to_string(),
+                f_amka: cells[2].to_string(),
+                f_eponymo: cells[3].to_string(),
+                f_onoma: cells[4].to_string(),
+                f_date: cells[5].to_string(),
+                f_from: cells[6].to_string(),
+                f_to: cells[7].to_string(),
+                f_cancellation: cells[8].to_string(),
+                f_step: cells[9].to_string(),
+                f_reason: cells[10].to_string(),
+                f_weekdates: cells[11].to_string(),
+                f_asee: cells[12].to_string(),
+
+            };
+            if overtimes.overtimes.overtime.len() < 1 {
+                return Err("Προσπάθεια εισαγωγής εργαζόμενου σε άδεια λίστα υπερωριών".to_string());
+            }
+            overtimes.overtimes.overtime[0].ergazomenoi.ergazomenoi.push(ergazomenos);
+        }
+    }
+
+    Ok(overtimes)
+}
+
+pub fn get_cards(lines: Vec<&str>) -> Result<CardWrapper, String> {
+    
+    let mut card_w = CardWrapper{
+        ..Default::default()
+    };
+
+    for line in lines{
+        let row = line.to_string();
+        if row.starts_with("1") {
+            let cells: Vec<&str> = row.split(";").collect();
+            if cells.len() < 4 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+
+            let card = Card{
+                f_afm_ergodoti: cells[1].to_string(),
+                f_aa: cells[2].to_string(),
+                f_comments: cells[3].to_string(),
+                details: Detail{
+                    details: Vec::new(),
+                }
+            };
+
+            card_w.cards.card.push(card);
+        }
+        else if row.starts_with("2") {
+            let cells: Vec<&str> = row.split(";").collect();
+            if cells.len() < 8 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            let detail = CardDetails{
+                f_afm: cells[1].to_string(),
+                f_eponymo: cells[2].to_string(),
+                f_onoma: cells[3].to_string(),
+                f_type: cells[4].to_string(),
+                f_reference_date: cells[5].to_string(),
+                f_date: cells[6].to_string(),
+                f_aitiologia: cells[7].to_string(),
+            };
+            if card_w.cards.card.len() < 1 {
+                return Err("Προσπάθεια λεπτομέρειας εργαζομένου σε άδεια λίστα κάρτων εργασίας".to_string());
+
+             }
+            card_w.cards.card[0].details.details.push(detail);
+        }
+    }
+
+    Ok(card_w)
 }
