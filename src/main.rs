@@ -18,7 +18,9 @@ mod convert;
 fn main() {
     //Get agruments from terminal
     let args: Vec<String> = env::args().collect();
-    //TODO: check if agrs count unexeptable 
+    if args.len() != 2 {
+        process::exit(1)
+    }
 
     let file_path = &args[1];
     if !Path::new(file_path).exists() {
@@ -32,7 +34,7 @@ fn main() {
     if !Path::new(config_path).exists() {
         
         //if file doesn't exist reply error to legacy app and exit
-        reply(config_path, Err(String::from("Το config αρχείο δεν υπάρχει")));
+        reply(file_path, Err(String::from("Το config αρχείο δεν υπάρχει")));
         process::exit(1)
     }
 
@@ -98,6 +100,7 @@ fn main() {
 }
 
 fn reply(file_name: &String, response: Result<(), String>){
+    //TODO: Handle unwraps 
    let no_ext =  Path::new(file_name).file_stem().unwrap().to_str().unwrap();
    let response_path = format!("{}{}", no_ext, "_resp.csv");
    let text = match response {
