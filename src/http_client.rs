@@ -23,13 +23,13 @@ pub struct HttpClientBuilder{
 
 
 impl HttpClient{
-    fn new() -> HttpClientBuilder{
+    pub fn new() -> HttpClientBuilder{
         HttpClientBuilder { 
             ..Default::default()
          }
     }
 
-    fn send(&self) -> Result<(), String>{
+    pub fn send(&self) -> Result<(), String>{
         let client = reqwest::blocking::Client::new();
         let response = client.post(&self.url)
             .header("Content-Type", "application/json")
@@ -69,14 +69,14 @@ impl HttpClientBuilder {
 
 
 impl AuthClient{
-    fn new(user_name: String, password: String, user_type: String) -> Self {
+    pub fn new(user_name: String, password: String, user_type: String) -> Self {
         Self {
             url: "https://trialeservices.yeka.gr/WebServicesApi/api/Authentication".to_string(),
             credentials: Credentials { user_name, password, user_type }
         }
     }
 
-    fn get_token(&self) -> Result<String, String> {
+    pub fn get_token(&self) -> Result<String, String> {
 
         let body = serde_json::to_string(&self.credentials).map_err(|e| e.to_string())?;
         let client = reqwest::blocking::Client::new();

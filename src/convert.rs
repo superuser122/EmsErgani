@@ -198,7 +198,7 @@ pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
         let row = line.to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
-            //TODO: cells size check
+            if cells.len() < 7 { return Err("Η κεφαλίδα αλλαγής σχέσης απασχόλησης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
             let wto = Wto {
                 f_aa_pararthmatos: cells[1].to_string(),
                 f_rel_protocol: cells[2].to_string(),
@@ -214,7 +214,7 @@ pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
         }
         else if row.starts_with("2") {
             let cells: Vec<&str> = row.split(";").collect();
-            //TODO: cells size check
+            if cells.len() < 6 { return Err("Κάποια γραμμή εργαζομένου αλλαγής σχέσης απασχόλησης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
             let ergazomenos = ErgazomenoiWTO {
                 f_afm: cells[1].to_string(),
                 f_eponymo: cells[2].to_string(),
