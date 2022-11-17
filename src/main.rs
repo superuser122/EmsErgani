@@ -19,7 +19,7 @@ mod convert;
 fn main() {
     //Get agruments from terminal
     let args: Vec<String> = env::args().collect();
-    if args.len() != 2 {
+    if args.len() != 3 {
         process::exit(1)
     }
 
