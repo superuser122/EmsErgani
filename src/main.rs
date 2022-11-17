@@ -8,6 +8,7 @@ mod anaggelia;
 mod overtimes;
 mod card;
 mod http_client;
+use convert::get_cards;
 use http_client::*;
 mod credentials;
 mod auth_response;
@@ -154,6 +155,13 @@ fn get_path_and_body(contents: String) -> Result<(String, String), String> {
                 let body = serde_json::to_string(&overtime).map_err(|e| e.to_string())?;
                 let path = "OvTime".to_string();
                 return Ok((path, body));
+            },
+            "6" => {
+                let cards = get_cards(lines)?;
+                let body = serde_json::to_string(&cards).map_err(|e| e.to_string())?;
+                let path = " WRKCardSE".to_string();
+                return Ok((path, body));
+
             },
             _ => {
                 return Err("Άγνωστος τύπος αρχείου".to_string());
