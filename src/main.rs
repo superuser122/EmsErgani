@@ -172,3 +172,23 @@ fn get_path_and_body(contents: String) -> Result<(String, String), String> {
     };
     Err("Ελέγξτε το αρχείο".to_string())
 }
+
+//Unit test
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn read_anaggelia_test() {
+
+        let contents = fs::read_to_string("E3test.txt").unwrap();
+        let lines: Vec<&str> = contents.lines().collect();
+        let anaggelia = get_anaggelia(lines).unwrap();
+
+        let body = serde_json::to_string(&anaggelia).unwrap();
+
+        println!("{}", body);
+
+    }
+}

@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct AnaggeliesE3Wrapper{
+    #[serde(rename = "AnaggeliesE3")]
     pub anaggelies: AnaggeliesE3
 
 }
