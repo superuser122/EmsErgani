@@ -20,6 +20,11 @@ pub struct HttpClientBuilder{
     body: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Default)]
+pub struct ResponseMessage {
+    message: String,
+}
+
 
 
 impl HttpClient{
@@ -41,7 +46,9 @@ impl HttpClient{
             return Ok(());
         }
         
-        Err(response.text().map_err(|e| e.to_string())?)
+        let resp_body = response.text().map_err(|e| e.to_string())?;
+        let resp_message = serde_json::from_str::<ResponseMessage>(&resp_body).unwrap();
+        Err(resp_message.message)
 
     }
     

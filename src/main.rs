@@ -79,6 +79,7 @@ fn main() {
                                 .build()
                                 .send();
                             reply(&file_path, res);
+                            
                         },
                         Err(e) => {
                             reply(file_path, Err(e));

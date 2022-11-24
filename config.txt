@@ -1,0 +1,3 @@
+user_name=IKA000FD00E
+password=51992450
+user_type=01
