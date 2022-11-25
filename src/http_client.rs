@@ -47,7 +47,7 @@ impl HttpClient{
         }
         
         let resp_body = response.text().map_err(|e| e.to_string())?;
-        let resp_message = serde_json::from_str::<ResponseMessage>(&resp_body).unwrap();
+        let resp_message = serde_json::from_str::<ResponseMessage>(&resp_body).map_err(|e| e.to_string())?;
         Err(resp_message.message)
 
     }
@@ -93,7 +93,7 @@ impl AuthClient{
             .send().map_err(|e| e.to_string())?;
         
         let resp_body = response.text().map_err(|e| e.to_string())?;
-        let auth_res = serde_json::from_str::<AuthResponse>(&resp_body).unwrap();
+        let auth_res = serde_json::from_str::<AuthResponse>(&resp_body).map_err(|e| e.to_string())?;
         Ok(auth_res.token)
 
     }

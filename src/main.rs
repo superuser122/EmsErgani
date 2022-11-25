@@ -19,7 +19,7 @@ mod convert;
 fn main() {
     //Get agruments from terminal
     let args: Vec<String> = env::args().collect();
-    if args.len() != 3 {
+    if args.len() != 2 {
         process::exit(1)
     }
 
@@ -31,42 +31,29 @@ fn main() {
         process::exit(1)
     }
 
-    let config_path = &args[2];
-    if !Path::new(config_path).exists() {
-        
-        //if file doesn't exist reply error to legacy app and exit
-        reply(file_path, Err(String::from("Το config αρχείο δεν υπάρχει")));
-        process::exit(1)
-    }
-
     let mut user_name = String::new();
     let mut password = String::new();
     let mut user_type = String::new();
-    match fs::read_to_string(config_path) {
-        Ok(configs) => {
-            for line in configs.lines(){
-                if line.starts_with("#"){
-                    continue;
-                }
-                else if line.starts_with("user_name="){
-                    user_name = line.replace("user_name=", "");
-                }
-                else if line.starts_with("password="){
-                    password = line.replace("password=", "");
-                }
-                else if line.starts_with("user_type="){
-                    user_type = line.replace("user_type=", "");
-                }
-            }
-        },
-        Err(_) => {
-            reply(file_path, Err(String::from("Πρόβλημα ανάγνωσης αρχείου config")));
-            process::exit(1)
-        }
-    }
 
     match fs::read_to_string(file_path){
         Ok(contents) => {
+            if let Some(first_line) = contents.lines().next() {
+                let line = first_line.to_string();
+                let cells: Vec<&str> = line.split(";").collect();
+                if cells.len() < 5  {
+                    reply(file_path, Err(String::from("Η κεφαλίδα αρχείου έχει μη αποδεκτό πλήθος κολόνων")));
+                    process::exit(1)
+                }
+                if cells[0] != "0"  {
+                    reply(file_path, Err(String::from("Δεν υπάρχει γραμμή κεφαλίδας αρχείου")));
+                    process::exit(1)
+                }
+                user_name = cells[2].to_string();
+                password = cells[3].to_string();
+                user_type = cells[4].to_string();
+                
+            }
+
             match get_path_and_body(contents) {
                 Ok(path_body) => {
                     let auth_client = AuthClient::new(user_name, password, user_type);
@@ -101,10 +88,11 @@ fn main() {
 
 }
 
+
+
 fn reply(file_name: &String, response: Result<(), String>){
-    //TODO: Handle unwraps 
-   let no_ext =  Path::new(file_name).file_stem().unwrap().to_str().unwrap();
-   let response_path = format!("{}{}", no_ext, "_resp.csv");
+   let no_ext =  Path::new(file_name).file_stem().unwrap_or_else(|| {process::exit(1)}).to_str().unwrap_or_else(|| {process::exit(1)});
+   let response_path = format!("{}{}", no_ext, ".ans");
    let text = match response {
         Ok(_) => {
             "0;".to_string()
@@ -113,7 +101,8 @@ fn reply(file_name: &String, response: Result<(), String>){
             format!("{}{}", "1;", e)
         },
    };
-   fs::write(response_path, text).expect("Unable to write file");
+
+   fs::write(response_path, text).unwrap_or_else(|_| {process::exit(1)});
 }
 
 fn get_path_and_body(contents: String) -> Result<(String, String), String> {
