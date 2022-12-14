@@ -1,5 +1,6 @@
 use std::fs;
 use std::env;
+use std::fs::File;
 use std::process;
 use std::path::Path;
 mod working_status;
@@ -14,6 +15,11 @@ mod credentials;
 mod auth_response;
 use convert::{get_anaggelia, get_working_status, get_wtos, get_overtimes};
 mod convert;
+use std::io::Read;
+
+use encoding_rs::WINDOWS_1253;
+use encoding_rs_io::DecodeReaderBytesBuilder;
+
 
 
 fn main() {
@@ -24,18 +30,33 @@ fn main() {
     }
 
     let file_path = &args[1];
+
+
     if !Path::new(file_path).exists() {
         
         //if file doesn't exist reply error to legacy app and exit
         reply(file_path, Err(String::from("Το συννημένο αρχείο δεν υπάρχει")));
         process::exit(1)
     }
+    //encoding
+    let mut nfile = String::new();
+    let file = File::open(file_path).unwrap();
+    let mut rdr = DecodeReaderBytesBuilder::new()
+    .encoding(Some(WINDOWS_1253))
+    // .encoding(Some(encoding_rs::UTF_8))
+    .build(file);  
+    rdr.read_to_string(&mut nfile).unwrap();
+    //let response_path = format!("{}{}", file_path, );
+
+    fs::write(file_path,nfile).ok();
+
 
     let mut user_name = String::new();
     let mut password = String::new();
     let mut user_type = String::new();
 
-    match fs::read_to_string(file_path){
+                                             
+    match fs::read_to_string(file_path) {       
         Ok(contents) => {
             if let Some(first_line) = contents.lines().next() {
                 let line = first_line.to_string();
@@ -65,7 +86,7 @@ fn main() {
                                 .body(path_body.1)
                                 .build()
                                 .send();
-                            reply(&file_path, res);
+                            reply(file_path, res);
                             
                         },
                         Err(e) => {
@@ -79,7 +100,7 @@ fn main() {
                     process::exit(1)
                 }
             }
-        },
+        },       
         Err(_) => {
             reply(file_path, Err(String::from("Πρόβλημα ανάγνωσης αρχείου")));
             process::exit(1)
