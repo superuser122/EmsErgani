@@ -1,6 +1,10 @@
 use std::fs;
 use std::env;
 use std::fs::File;
+use std::io::Write;
+use std::io::stdin;
+use std::io::stdout;
+use std::path::PathBuf;
 use std::process;
 use std::path::Path;
 mod working_status;
@@ -25,17 +29,22 @@ use encoding_rs_io::DecodeReaderBytesBuilder;
 fn main() {
     //Get agruments from terminal
     let args: Vec<String> = env::args().collect();
+    //println!("args: {} {}", args[0],args[1]);
+    //pause();
     if args.len() != 2 {
+        //println!("exit args.len() != 2");
         process::exit(1)
     }
 
     let file_path = &args[1];
-
+    //println!("file_path: {}", file_path);
+    //pause();
 
     if !Path::new(file_path).exists() {
         
         //if file doesn't exist reply error to legacy app and exit
         reply(file_path, Err(String::from("Το συννημένο αρχείο δεν υπάρχει")));
+        //println!("path not exists {}", file_path);
         process::exit(1)
     }
     //encoding
@@ -49,6 +58,8 @@ fn main() {
     //let response_path = format!("{}{}", file_path, );
 
     fs::write(file_path,nfile).ok();
+    //println!("encoding filepath: {}", file_path);
+    //pause();
 
 
     let mut user_name = String::new();
@@ -113,7 +124,14 @@ fn main() {
 
 fn reply(file_name: &String, response: Result<(), String>){
    let no_ext =  Path::new(file_name).file_stem().unwrap_or_else(|| {process::exit(1)}).to_str().unwrap_or_else(|| {process::exit(1)});
-   let response_path = format!("{}{}", no_ext, ".ans");
+   
+   let path = PathBuf::from(file_name);
+   let dir = path.parent().unwrap();
+
+   let response_path = format!("{}{}",no_ext,".ans");
+
+   
+    
    let text = match response {
         Ok(_) => {
             "0;".to_string()
@@ -123,7 +141,32 @@ fn reply(file_name: &String, response: Result<(), String>){
         },
    };
 
-   fs::write(response_path, text).unwrap_or_else(|_| {process::exit(1)});
+
+    //println!("reply path: {}", path.to_str().unwrap());
+    //pause();
+    //println!("reply dir: {}", dir.to_str().unwrap());
+    //pause();
+    //println!("reply file_name: {}", file_name);
+    //pause();
+    //println!("reply no_ext: {}", no_ext);
+    //pause();
+    //println!("reply new_path: {}", new_response_path.to_str().unwrap());
+    //pause();
+
+    // let mut nfile = String::new();
+    // let file = File::open(file_name).unwrap();
+    // let mut rdr = DecodeReaderBytesBuilder::new()
+    // .encoding(Some(EUC_JP))
+    // // .encoding(Some(encoding_rs::UTF_8))
+    // .build(file);  
+    // rdr.read_to_string(&mut nfile).unwrap();
+    // //let response_path = format!("{}{}", file_path, );
+    // println!("FILE: {}", nfile);
+    // pause();   
+
+    let new_response_path = dir.join(response_path);
+
+   fs::write(new_response_path, text).unwrap_or_else(|_| {process::exit(1)});
 }
 
 fn get_path_and_body(contents: String) -> Result<(String, String), String> {
@@ -183,6 +226,15 @@ fn get_path_and_body(contents: String) -> Result<(String, String), String> {
     };
     Err("Ελέγξτε το αρχείο".to_string())
 }
+
+
+fn pause() {
+    let mut stdout = stdout();
+    stdout.write(b"Press Enter to continue...").unwrap();
+    stdout.flush().unwrap();
+    stdin().read(&mut [0]).unwrap();
+}
+
 
 //Unit test
 
