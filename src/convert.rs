@@ -7,7 +7,8 @@ pub fn get_anaggelia(lines: Vec<&str>) -> Result<AnaggeliesE3Wrapper, String> {
         let row = line.clone().to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 119 { return Err("Κάποια γραμμή αναγγελίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 119 { return Err("Κάποια γραμμή αναγγελίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 119 { return Err("Kapoia grammi anaggelias exei mi apodekto plithos kolonon.".to_string());}
             let anaggelia = AnaggeliaE3 {
                 f_aa_pararthmatos: cells[1].to_string(),
                 f_rel_protocol: cells[2].to_string(),
@@ -151,7 +152,8 @@ pub fn get_working_status(lines: Vec<&str>) -> Result<WorkingStatusChangesWrappe
         let row = line.clone().to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 5 { return Err("Κάποια γραμμή αλλαγής εργασιακής σχέσης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 5 { return Err("Κάποια γραμμή αλλαγής εργασιακής σχέσης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 5 { return Err("Kapoia grammi allagis ergasiakis sxesis exi mi apodekto plithos kolonon".to_string());}
             wsc.f_aa_pararthmatos = cells[1].to_string();
             wsc.f_rel_protocol = cells[2].to_string();
             wsc.f_rel_date = cells[3].to_string();
@@ -159,7 +161,8 @@ pub fn get_working_status(lines: Vec<&str>) -> Result<WorkingStatusChangesWrappe
         }
         else if row.starts_with("2") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 12 { return Err("Κάποια γραμμή αλλαγής εργασιακής σχέσης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 12 { return Err("Κάποια γραμμή αλλαγής εργασιακής σχέσης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 12 { return Err("Kapoia grammi allagis ergasiakis sxesis exi mi apodekto plithos kolonon".to_string());}
             let ergazomenos = crate::working_status::Ergazomenos {
                 f_afm: cells[1].to_string(),
                 f_eponymo: cells[2].to_string(),
@@ -198,7 +201,8 @@ pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
         let row = line.to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 7 { return Err("Η κεφαλίδα αλλαγής σχέσης απασχόλησης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 7 { return Err("Η κεφαλίδα αλλαγής σχέσης απασχόλησης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 7 { return Err("I kefalida allagis sxesis apasxolisis exi mi apodekto plithos kolonon.".to_string());}
             let wto = Wto {
                 f_aa_pararthmatos: cells[1].to_string(),
                 f_rel_protocol: cells[2].to_string(),
@@ -214,7 +218,8 @@ pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
         }
         else if row.starts_with("2") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 6 { return Err("Κάποια γραμμή εργαζομένου αλλαγής σχέσης απασχόλησης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 6 { return Err("Κάποια γραμμή εργαζομένου αλλαγής σχέσης απασχόλησης έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 6 { return Err("Kapoia grammi ergazomenou allagis sxesis aposxolisis exi mi apodekto plithos kolonon.".to_string());}
             let ergazomenos = ErgazomenoiWTO {
                 f_afm: cells[1].to_string(),
                 f_eponymo: cells[2].to_string(),
@@ -226,12 +231,14 @@ pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
                 }
             };
             //Strong rule wto has ONE and only element 
-            if wtosw.wtos.wto.len() == 0 { return Err("Προσπάθεια εισαγωγής γραμμής εργαζομένου σε άδειο παράρτημα".to_string());}
+            //if wtosw.wtos.wto.len() == 0 { return Err("Προσπάθεια εισαγωγής γραμμής εργαζομένου σε άδειο παράρτημα".to_string());}
+            if wtosw.wtos.wto.len() == 0 { return Err("Prospathia isagogis grammis ergazomenou se adio parartima.".to_string());}
             wtosw.wtos.wto[0].ergazomenoi.ergazomenoi_wto.push(ergazomenos);
         }
         else if row.starts_with("3") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 4 { return Err("Κάποια γραμμή αναλυτικών εργαζομένου έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 4 { return Err("Κάποια γραμμή αναλυτικών εργαζομένου έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 4 { return Err("Kapoia grammi analitikon ergazomenou exi mi apodekto plithos kolonon.".to_string());}
             let erg_analytic = ErgazomenosWTOAnalytics {
                 f_type: cells[1].to_string(),
                 f_from: cells[2].to_string(),
@@ -242,7 +249,8 @@ pub fn get_wtos(lines: Vec<&str>) -> Result<WtosWrapper, String>{
                     last_erg.egrazomenos_analytics.egrazomenos_wto_analytics.push(erg_analytic);
                 },
                 None => {
-                     return Err("Προσπάθεια εισαγωγής αναλυτικών εργαζομένου σε άδεια λίστα εργαζομένων".to_string());
+                     //return Err("Προσπάθεια εισαγωγής αναλυτικών εργαζομένου σε άδεια λίστα εργαζομένων".to_string());
+                     return Err("Prospathia eisagogis analitikon ergazomenou se adia lista ergazomenon.".to_string());
                 }
             } 
         }
@@ -261,7 +269,8 @@ pub fn get_overtimes(lines: Vec<&str>) -> Result<OvertimesWrapper, String> {
         let row = line.to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 15 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 15 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 15 { return Err("I epikefalida yperorias exi mi apodekto plithos kolonon.".to_string());}
 
             let overtime = Overtime{
                 f_aa_pararthmatos: cells[1].to_string(),
@@ -287,7 +296,8 @@ pub fn get_overtimes(lines: Vec<&str>) -> Result<OvertimesWrapper, String> {
         }
         else if row.starts_with("2") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 13 { return Err("Η γραμμή εργαζομένου υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 13 { return Err("Η γραμμή εργαζομένου υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 13 { return Err("I grammi ergazomenou yperorias exi mi apodekto plithos kolonon.".to_string());}
 
             let ergazomenos = crate::overtimes::Egrazomenos{
                 f_afm: cells[1].to_string(),
@@ -305,7 +315,8 @@ pub fn get_overtimes(lines: Vec<&str>) -> Result<OvertimesWrapper, String> {
 
             };
             if overtimes.overtimes.overtime.len() < 1 {
-                return Err("Προσπάθεια εισαγωγής εργαζόμενου σε άδεια λίστα υπερωριών".to_string());
+                //return Err("Προσπάθεια εισαγωγής εργαζόμενου σε άδεια λίστα υπερωριών".to_string());
+                return Err("Prospathia isagogis ergazomenou se adia lista yperorion.".to_string());
             }
             overtimes.overtimes.overtime[0].ergazomenoi.ergazomenoi.push(ergazomenos);
         }
@@ -324,7 +335,8 @@ pub fn get_cards(lines: Vec<&str>) -> Result<CardWrapper, String> {
         let row = line.to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 4 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 4 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 4 { return Err("I epikefalida yperorias exi mi apodekto plithos kolonon".to_string());}
 
             let card = Card{
                 f_afm_ergodoti: cells[1].to_string(),
@@ -339,7 +351,8 @@ pub fn get_cards(lines: Vec<&str>) -> Result<CardWrapper, String> {
         }
         else if row.starts_with("2") {
             let cells: Vec<&str> = row.split(";").collect();
-            if cells.len() < 8 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            //if cells.len() < 8 { return Err("Η επικεφαλίδα υπερωρίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+            if cells.len() < 8 { return Err("I epikefalida yperorias exi mi apodekto plithos kolonon.".to_string());}
             let detail = CardDetails{
                 f_afm: cells[1].to_string(),
                 f_eponymo: cells[2].to_string(),
@@ -350,7 +363,8 @@ pub fn get_cards(lines: Vec<&str>) -> Result<CardWrapper, String> {
                 f_aitiologia: cells[7].to_string(),
             };
             if card_w.cards.card.len() < 1 {
-                return Err("Προσπάθεια λεπτομέρειας εργαζομένου σε άδεια λίστα κάρτων εργασίας".to_string());
+                //return Err("Προσπάθεια λεπτομέρειας εργαζομένου σε άδεια λίστα κάρτων εργασίας".to_string());
+                return Err("Prospathia leptomerias ergazomenou se adia lista karton ergasias.".to_string());
 
              }
             card_w.cards.card[0].details.details.push(detail);
