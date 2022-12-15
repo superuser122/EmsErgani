@@ -1,7 +1,6 @@
 use std::fs;
 use std::env;
 use std::fs::File;
-use std::fs::read_to_string;
 use std::io::Write;
 use std::io::stdin;
 use std::io::stdout;
@@ -15,20 +14,14 @@ mod overtimes;
 mod card;
 mod http_client;
 use convert::get_cards;
-use encoding_rs::ISO_8859_16;
-use encoding_rs::mem::decode_latin1;
 use http_client::*;
 mod credentials;
 mod auth_response;
 use convert::{get_anaggelia, get_working_status, get_wtos, get_overtimes};
 mod convert;
 use std::io::Read;
-use std::process::Command;
-use oem_cp::decode_string_complete_table;
-use oem_cp::code_table::DECODING_TABLE_CP737;
-use oem_cp::encode_string_checked;
 use oem_cp::code_table::ENCODING_TABLE_CP737;
-
+use oem_cp::encode_string_lossy;
 use encoding_rs::WINDOWS_1253;
 use encoding_rs_io::DecodeReaderBytesBuilder;
 
@@ -38,23 +31,16 @@ fn main() {
 
     //Get agruments from terminal
     let args: Vec<String> = env::args().collect();
-    //println!("args: {} {}", args[0],args[1]);
-    //pause();
     if args.len() != 2 {
-        //println!("exit args.len() != 2");
         process::exit(1)
     }
 
     let file_path = &args[1];
-    //println!("file_path: {}", file_path);
-    //pause();
 
     if !Path::new(file_path).exists() {
         
         //if file doesn't exist reply error to legacy app and exit
-        //reply(file_path, Err(String::from("Το συννημένο αρχείο δεν υπάρχει")));
-        reply(file_path, Err(String::from("To sinnimeno arxio den yparxi.")));
-        //println!("path not exists {}", file_path);
+        reply(file_path, Err(String::from("Το συννημένο αρχείο δεν υπάρχει")));
         process::exit(1)
     }
   
@@ -69,14 +55,8 @@ fn main() {
     .build(file);  
     rdr.read_to_string(&mut nfile).unwrap();
     //let response_path = format!("{}{}", file_path, );
-    
-    //println!("encoding nfile: {}", nfile);
-    //pause();
 
     fs::write(file_path,nfile).ok();
-    //println!("encoding filepath: {}", file_path);
-    //pause();
-
 
     let mut user_name = String::new();
     let mut password = String::new();
@@ -89,13 +69,11 @@ fn main() {
                 let line = first_line.to_string();
                 let cells: Vec<&str> = line.split(";").collect();
                 if cells.len() < 5  {
-                    //reply(file_path, Err(String::from("Η κεφαλίδα αρχείου έχει μη αποδεκτό πλήθος κολόνων")));
-                    reply(file_path, Err(String::from("I kefalida arxiou exi mi apodekto plithos kolonon.")));
+                    reply(file_path, Err(String::from("Η κεφαλίδα αρχείου έχει μη αποδεκτό πλήθος κολόνων")));
                     process::exit(1)
                 }
                 if cells[0] != "0"  {
-                    //reply(file_path, Err(String::from("Δεν υπάρχει γραμμή κεφαλίδας αρχείου")));
-                    reply(file_path, Err(String::from("Den yparxi grammi kefalidas arxiou.")));
+                    reply(file_path, Err(String::from("Δεν υπάρχει γραμμή κεφαλίδας αρχείου")));
                     process::exit(1)
                 }
                 user_name = cells[2].to_string();
@@ -131,8 +109,7 @@ fn main() {
             }
         },       
         Err(_) => {
-            //reply(file_path, Err(String::from("Πρόβλημα ανάγνωσης αρχείου")));
-            reply(file_path, Err(String::from("Provlima anagnosis arxiou.")));
+            reply(file_path, Err(String::from("Πρόβλημα ανάγνωσης αρχείου")));
             process::exit(1)
         }
     }
@@ -160,31 +137,11 @@ fn reply(file_name: &String, response: Result<(), String>){
         },
    };
 
-
-    //  let mut nfile = String::new();
-    //  let file = File::open(text).unwrap();
-    //  let mut rdr = DecodeReaderBytesBuilder::new()
-    //  .encoding(Some(ISO_8859_16))
-    // // // .encoding(Some(encoding_rs::UTF_8))
-    //  .build(file);  
-    //  rdr.read_to_string(&mut nfile).unwrap();
-    //  //let response_path = format!("{}{}", file_path, );
-    
-   
-     //let mut lines: Vec<String>= Vec::new();
-      //let file = File::open(text);
-       
-    //let gr_text = encode_string_checked(text, &ENCODING_TABLE_CP737 );
-    
-// Command::new("C:\\e-multisoft\\EmsErgani\\target\\debug\\conv.bat")
-//     .output()
-//     //.spawn()
-//     .expect("ls command failed to start");
-
+    let ftext = encode_string_lossy(text, &ENCODING_TABLE_CP737);
 
     let new_response_path = dir.join(response_path);
 
-   fs::write(new_response_path, text).unwrap_or_else(|_| {process::exit(1)});
+   fs::write(new_response_path, ftext).unwrap_or_else(|_| {process::exit(1)});
     //println!("reply text {}", text);
     //pause();
 }
@@ -194,10 +151,8 @@ fn get_path_and_body(contents: String) -> Result<(String, String), String> {
     if let Some(first_line) = contents.lines().next() {
         let line = first_line.to_string();
         let cells: Vec<&str> = line.split(";").collect();
-        //if cells.len() < 2  { return Err("Η κεφαλίδα αρχείου έχει μη αποδεκτό πλήθος κολόνων".to_string());}
-        if cells.len() < 2  { return Err("I kefalida arxiou exi mi apodekto plithos kolonon.".to_string());}
-        //if cells[0] != "0"  { return Err("Δεν υπάρχει γραμμή κεφαλίδας αρχείου".to_string());}
-        if cells[0] != "0"  { return Err("Den yparxi grammi kefalidas arxiou.".to_string());}
+        if cells.len() < 2  { return Err("Η κεφαλίδα αρχείου έχει μη αποδεκτό πλήθος κολόνων".to_string());}
+        if cells[0] != "0"  { return Err("Δεν υπάρχει γραμμή κεφαλίδας αρχείου".to_string());}
         let lines = contents.lines().collect();
         match cells[1] {
             "1" => {
@@ -241,15 +196,13 @@ fn get_path_and_body(contents: String) -> Result<(String, String), String> {
 
             },
             _ => {
-                //return Err("Άγνωστος τύπος αρχείου".to_string());
-                return Err("Agnostos typos arxiou.".to_string());
+                return Err("Άγνωστος τύπος αρχείου".to_string());
             }
             
         };
 
     };
-    //Err("Ελέγξτε το αρχείο".to_string())
-    Err("Elegkste to arxio.".to_string())
+    Err("Ελέγξτε το αρχείο".to_string())
 }
 
 

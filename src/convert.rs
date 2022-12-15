@@ -7,8 +7,7 @@ pub fn get_anaggelia(lines: Vec<&str>) -> Result<AnaggeliesE3Wrapper, String> {
         let row = line.clone().to_string();
         if row.starts_with("1") {
             let cells: Vec<&str> = row.split(";").collect();
-            //if cells.len() < 119 { return Err("Κάποια γραμμή αναγγελίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
-            if cells.len() < 119 { return Err("Kapoia grammi anaggelias exei mi apodekto plithos kolonon.".to_string());}
+            if cells.len() < 119 { return Err("Κάποια γραμμή αναγγελίας έχει μη αποδεκτό πλήθος κολόνων".to_string());}
             let anaggelia = AnaggeliaE3 {
                 f_aa_pararthmatos: cells[1].to_string(),
                 f_rel_protocol: cells[2].to_string(),
