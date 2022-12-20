@@ -56,7 +56,9 @@ impl HttpClient{
 
 impl HttpClientBuilder {
     pub fn url(mut self, path: String) -> HttpClientBuilder {
-        self.url = format!("{}{}", "https://trialeservices.yeka.gr/WebServicesApi/api/Documents/", path);
+        //Trial
+        //self.url = format!("{}{}", "https://trialeservices.yeka.gr/WebServicesApi/api/Documents/", path);
+        self.url = format!("{}{}", "https://eservices.yeka.gr/WebServicesApi/api/Documents/", path);
         self
     }
 
@@ -78,7 +80,10 @@ impl HttpClientBuilder {
 impl AuthClient{
     pub fn new(user_name: String, password: String, user_type: String) -> Self {
         Self {
-            url: "https://trialeservices.yeka.gr/WebServicesApi/api/Authentication".to_string(),
+            //Trial
+            //url: "https://trialeservices.yeka.gr/WebServicesApi/api/Authentication".to_string(),
+            //credentials: Credentials { user_name, password, user_type }
+            url: "https://eservices.yeka.gr/WebServicesApi/api/Authentication".to_string(),
             credentials: Credentials { user_name, password, user_type }
         }
     }
